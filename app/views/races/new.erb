@@ -1,0 +1,38 @@
+<%= drawer("Create new race") do %>
+  <%= form_with model: @form, url: races_path do |form| %>
+    <% if @form.errors.any? || @form.race.race_memberships.any? { |rm| rm.errors.any? } %>
+      <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md my-3">
+        <ul class="list-disc ml-6">
+          <% seen_errors = Set.new %>
+          
+          <% @form.errors.each do |error| %>
+            <% message = error.full_message %>
+            <% unless seen_errors.include?(message) %>
+              <li><%= message %></li>
+              <% seen_errors.add(message) %>
+            <% end %>
+          <% end %>
+
+          <% @form.race.race_memberships.each do |membership| %>
+            <% membership.errors.each do |error| %>
+              <% message = error.full_message %>
+              <% unless seen_errors.include?(message) %>
+                <li><%= message %></li>
+                <% seen_errors.add(message) %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="mb-4">
+      <%= form.label :title, class: "block text-sm font-medium #{@form.race.errors[:title].any? ? 'text-red-500' : 'text-gray-700'}" %>
+      <%= form.text_field :title, class: "mt-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border border-gray-300 rounded-md px-3 py-2" %>
+    </div>
+
+    <%= render "students_memberships_form", form: %>
+
+    <%= form.submit "Create", class: "rounded-md px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer mt-8" %>
+  <% end %>
+<% end %>

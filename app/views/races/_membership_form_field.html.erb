@@ -1,0 +1,18 @@
+<div class="flex items-center" data-race-memberships-target="studentField">
+  <div class="mb-2 relative flex-1">
+    <%= form.fields_for :race_memberships, local_assigns[:race_membership] || RaceMembership.new(race: form.object.race), index: "membership_#{local_assigns[:counter]}" do |membership_form| %>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= membership_form.label :student_id, "Student", class: "block text-sm font-medium #{membership_form.object.errors[:student].any? ? 'text-red-500' : 'text-gray-700'}" %>
+          <%= membership_form.select :student_id, options_from_collection_for_select(Student.all, :id, :full_name, membership_form.object.student_id),
+                { include_blank: true },
+                class: "mt-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border border-gray-300 rounded-md px-3 py-2" %>
+        </div>
+        <div>
+          <%= membership_form.label :lane_number, "Lane number", class: "block text-sm font-medium #{membership_form.object.errors[:lane_number].any? ? 'text-red-500' : 'text-gray-700'}" %>
+          <%= membership_form.number_field :lane_number, class: "mt-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-sm border border-gray-300 rounded-md px-3 py-2" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

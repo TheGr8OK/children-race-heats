@@ -1,0 +1,5 @@
+<%= drawer("#{@race.title} results") do %>
+  <% @race.race_memberships.for_list.each do |membership| %>
+    <%= student_place(membership) %>
+  <% end %>
+<% end %>

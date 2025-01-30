@@ -1,0 +1,34 @@
+<%= drawer("Submit results for #{@form.race.title}") do %>
+  <%= form_with model: @form, url: submit_results_race_path(@form.race), method: :post do |form| %>
+    <% if @form.errors.any? %>
+      <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md my-3">
+        <ul class="list-disc ml-6">
+          <% seen_errors = Set.new %>
+          
+          <% @form.errors.each do |error| %>
+            <% message = error.full_message %>
+            <% unless seen_errors.include?(message) %>
+              <li><%= message %></li>
+              <% seen_errors.add(message) %>
+            <% end %>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <% @form.race.race_memberships.each do |membership| %>
+      <%= form.fields_for :race_memberships, membership, index: membership.id do |membership_form| %>
+        <div class="flex flex-col gap-2 border-b border-gray-200 p-4">
+          <% membership_place = params.dig(:submit_race_results_form, :race_memberships, membership.id.to_s, :place) || membership_form.object.place %>
+          <%= membership_form.label :place, "#{membership.student.full_name} place", class: "block text-sm font-medium #{(membership_form.object.place.blank? || membership_form.object.place < 1) && @form.errors[:place].any? ? 'text-red-500' : 'text-gray-700'}" %>
+          <%= membership_form.number_field :place, 
+              value: membership_place,
+              class: "mt-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full md:w-1/2 text-sm border border-gray-300 rounded-md px-3 py-2" %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%= form.submit "Submit", class: "rounded-md px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer mt-8 mb-4" %>
+
+    <%= render "shared/hint", content: "In the case of a tie, the next available place should skip the number of tied athletes, for example in the case of 2 ties for 1st, the next athlete cannot place 2nd but instead needs to place 3rd (1, 1, 3). In the case of 3 ties for 1st, the next athlete must place 4th (1, 1, 1, 4), and so on. This is also valid for ties in other places, e.g. (1, 2, 2, 4)." %>
+  <% end %>
+<% end %>
